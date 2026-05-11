@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panini Mundial 2026 - Figuritas</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:linear-gradient(160deg,#030f1e 0%,#061d36 60%,#040e1a 100%);min-height:100vh;color:#fff;padding:14px}
+.container{max-width:460px;margin:0 auto}
+h1{font-size:19px;font-weight:900;letter-spacing:1px;background:linear-gradient(90deg,#FFD700,#FFA500,#FFD700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin:4px 0 2px}
+.subtitle{text-align:center;font-size:10px;color:#5a8aaa;margin-bottom:14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+.stat{background:rgba(255,255,255,0.05);border-radius:9px;padding:8px 4px;text-align:center}
+.stat-val{font-size:18px;font-weight:900}
+.stat-lbl{font-size:9px;color:#8ab}
+.progress-bar{background:rgba(255,255,255,0.07);border-radius:5px;height:7px;margin-bottom:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#22c55e,#16a34a);transition:width .4s ease}
+.progress-pct{text-align:center;font-size:10px;color:#4a7a9a;margin-bottom:14px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:14px}
+.tab{padding:7px 2px;font-size:10px;font-weight:800;border-radius:7px;border:none;cursor:pointer;background:rgba(255,255,255,0.07);color:#7aa;transition:.2s}
+.tab.active{background:linear-gradient(135deg,#FFD700,#FFA500);color:#000}
+.panel{display:none}
+.panel.active{display:block}
+input.search{width:100%;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);color:#fff;font-size:12px;margin-bottom:12px;outline:none}
+input.search::placeholder{color:#4a7a9a}
+.section{margin-bottom:16px}
+.section-header{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.section-title{font-size:12px;color:#FFD700;font-weight:800}
+.group-badge{font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.3);color:#FFD700;font-weight:700}
+.section-count{margin-left:auto;font-size:9px;color:#4ade80}
+.stickers{display:flex;flex-wrap:wrap;gap:5px}
+.sticker{position:relative}
+.sticker-btn{width:48px;height:48px;border-radius:8px;cursor:pointer;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);color:#2a4a6a;font-weight:800;font-size:8.5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;transition:.15s;-webkit-user-select:none;user-select:none}
+.sticker-btn.has{border-color:#4ade80;background:rgba(74,222,128,0.12);color:#4ade80}
+.sticker-btn.rep{border-color:#facc15;background:rgba(250,204,21,0.15);color:#facc15}
+.sticker-btn .icon{font-size:13px;line-height:1}
+.badge{position:absolute;top:-5px;right:-5px;background:#facc15;color:#000;border-radius:50%;width:15px;height:15px;font-size:8px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.hint{text-align:center;font-size:10px;color:#2a4060;margin-top:6px}
+.empty{text-align:center;padding:40px;color:#2a4060;font-size:14px}
+.empty-icon{font-size:40px;margin-bottom:8px}
+.rep-row{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:7px 10px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.rep-id{font-weight:900;font-size:11px;color:#facc15;min-width:44px}
+.rep-lbl{font-size:10px;color:#ccc;flex:1}
+.rep-cnt{font-size:10px;font-weight:700;color:#facc15;padding:2px 7px;border-radius:4px;background:rgba(250,204,21,0.12);border:1px solid rgba(250,204,21,0.3)}
+.adj-btn{border:none;border-radius:5px;cursor:pointer;font-weight:900;font-size:14px;width:22px;height:22px}
+.adj-plus{background:rgba(34,197,94,0.2);color:#4ade80}
+.adj-minus{background:rgba(239,68,68,0.2);color:#f87171}
+.miss-section{margin-bottom:14px}
+.miss-header{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.miss-title{font-size:11px;color:#FFD700;font-weight:800}
+.miss-count{font-size:9px;color:#f87171}
+.miss-chips{display:flex;flex-wrap:wrap;gap:5px}
+.miss-chip{padding:4px 8px;border-radius:5px;background:rgba(248,113,113,0.10);border:1px solid rgba(248,113,113,0.3);color:#f87171;font-size:10px;font-weight:700;cursor:pointer;transition:.15s}
+.miss-chip:active{background:rgba(248,113,113,0.25)}
+.export-box{border-radius:12px;padding:12px;margin-bottom:12px}
+.export-box.red{background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.2)}
+.export-box.yellow{background:rgba(250,204,21,0.07);border:1px solid rgba(250,204,21,0.2)}
+.export-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.export-title{font-weight:800;font-size:12px}
+.export-title.red{color:#f87171}
+.export-title.yellow{color:#facc15}
+.copy-btn{padding:5px 12px;border-radius:7px;border:none;cursor:pointer;font-size:11px;font-weight:800;color:#000;transition:.2s}
+.copy-btn.red{background:#f87171}
+.copy-btn.yellow{background:#facc15}
+.copy-btn.ok{background:#4ade80}
+textarea.export-text{width:100%;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.08);border-radius:7px;color:#ddd;padding:9px;font-size:9px;font-family:monospace;resize:none;outline:none}
+.export-note{font-size:9px;color:#2a4060;text-align:center;margin-top:4px}
+.save-note{font-size:9px;color:#22c55e;text-align:center;padding:6px;background:rgba(34,197,94,0.08);border-radius:6px;margin-bottom:10px}
+footer{margin-top:18px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);text-align:center;font-size:9px;color:#2a4060}
+</style>
+</head>
+<body>
+<div class="container">
+  <div style="text-align:center;margin-bottom:14px">
+    <div style="font-size:28px">⚽</div>
+    <h1>PANINI MUNDIAL 2026</h1>
+    <div class="subtitle">USA · México · Canadá — 48 selecciones, 12 grupos</div>
+  </div>
+
+  <div class="save-note" id="save-note">💾 Los datos se guardan automáticamente en este dispositivo</div>
+
+  <div class="stats">
+    <div class="stat" style="border:1px solid #4ade8030"><div class="stat-val" style="color:#4ade80" id="s-tengo">0</div><div class="stat-lbl">Tengo</div></div>
+    <div class="stat" style="border:1px solid #f8717130"><div class="stat-val" style="color:#f87171" id="s-faltan">0</div><div class="stat-lbl">Faltan</div></div>
+    <div class="stat" style="border:1px solid #facc1530"><div class="stat-val" style="color:#facc15" id="s-rep">0</div><div class="stat-lbl">Repet.</div></div>
+    <div class="stat" style="border:1px solid #60a5fa30"><div class="stat-val" style="color:#60a5fa" id="s-total">0</div><div class="stat-lbl">Total</div></div>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+  <div class="progress-pct" id="pct-label">0% completo</div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab(0)">📋 Álbum</button>
+    <button class="tab" onclick="showTab(1)">🔁 Repetidas</button>
+    <button class="tab" onclick="showTab(2)">❌ Faltantes</button>
+    <button class="tab" onclick="showTab(3)">📤 Exportar</button>
+  </div>
+
+  <div class="panel active" id="panel-0">
+    <input class="search" id="search-input" placeholder="Buscar equipo o figurita..." oninput="renderAlbum()">
+    <div id="album-content"></div>
+    <div class="hint">Toca para agregar · Toca largo para quitar</div>
+  </div>
+
+  <div class="panel" id="panel-1">
+    <div id="rep-content"></div>
+  </div>
+
+  <div class="panel" id="panel-2">
+    <div id="miss-content"></div>
+  </div>
+
+  <div class="panel" id="panel-3">
+    <div class="export-box red">
+      <div class="export-header">
+        <span class="export-title red" id="exp-miss-title">❌ Me faltan (0)</span>
+        <button class="copy-btn red" id="copy-miss" onclick="copyText('miss')">📋 Copiar</button>
+      </div>
+      <textarea class="export-text" id="text-miss" rows="7" readonly></textarea>
+    </div>
+    <div class="export-box yellow">
+      <div class="export-header">
+        <span class="export-title yellow" id="exp-rep-title">🔁 Para cambiar (0)</span>
+        <button class="copy-btn yellow" id="copy-rep" onclick="copyText('rep')">📋 Copiar</button>
+      </div>
+      <textarea class="export-text" id="text-rep" rows="7" readonly></textarea>
+    </div>
+    <div class="export-note">Copiá y pegá en WhatsApp para cambiar con tus compañeros</div>
+  </div>
+
+  <footer id="footer-stats">0/0 obtenidas · 0 para cambiar · 0 faltan</footer>
+</div>
+
+<script>
+// ── DATOS ─────────────────────────────────────────────────────────────────────
+var ALBUM_RAW = [
+  {key:"FWC",name:"Especiales FIFA",emoji:"🏆",stickers:[
+    {id:"FWC1",label:"Emblema Oficial"},{id:"FWC2",label:"Emblema Oficial"},
+    {id:"FWC3",label:"Mascotas"},{id:"FWC4",label:"Eslogan Oficial"},
+    {id:"FWC5",label:"Balón Oficial"},{id:"FWC6",label:"Canadá Sede"},
+    {id:"FWC7",label:"México Sede"},{id:"FWC8",label:"USA Sede"}
+  ]},
+  {key:"MEX",name:"México",         emoji:"🇲🇽",group:"A"},
+  {key:"RSA",name:"Sudáfrica",      emoji:"🇿🇦",group:"A"},
+  {key:"KOR",name:"Corea del Sur",  emoji:"🇰🇷",group:"A"},
+  {key:"CZE",name:"Rep. Checa",     emoji:"🇨🇿",group:"A"},
+  {key:"CAN",name:"Canadá",         emoji:"🇨🇦",group:"B"},
+  {key:"BIH",name:"Bosnia-Herz.",   emoji:"🇧🇦",group:"B"},
+  {key:"QAT",name:"Catar",          emoji:"🇶🇦",group:"B"},
+  {key:"SUI",name:"Suiza",          emoji:"🇨🇭",group:"B"},
+  {key:"BRA",name:"Brasil",         emoji:"🇧🇷",group:"C"},
+  {key:"MAR",name:"Marruecos",      emoji:"🇲🇦",group:"C"},
+  {key:"HAI",name:"Haití",          emoji:"🇭🇹",group:"C"},
+  {key:"SCO",name:"Escocia",        emoji:"🏴󠁧󠁢󠁳󠁣󠁴󠁿",group:"C"},
+  {key:"USA",name:"Estados Unidos", emoji:"🇺🇸",group:"D"},
+  {key:"PAR",name:"Paraguay",       emoji:"🇵🇾",group:"D"},
+  {key:"AUS",name:"Australia",      emoji:"🇦🇺",group:"D"},
+  {key:"TUR",name:"Turquía",        emoji:"🇹🇷",group:"D"},
+  {key:"GER",name:"Alemania",       emoji:"🇩🇪",group:"E"},
+  {key:"CUW",name:"Curazao",        emoji:"🇨🇼",group:"E"},
+  {key:"CIV",name:"C. de Marfil",   emoji:"🇨🇮",group:"E"},
+  {key:"ECU",name:"Ecuador",        emoji:"🇪🇨",group:"E"},
+  {key:"NED",name:"Países Bajos",   emoji:"🇳🇱",group:"F"},
+  {key:"JPN",name:"Japón",          emoji:"🇯🇵",group:"F"},
+  {key:"SWE",name:"Suecia",         emoji:"🇸🇪",group:"F"},
+  {key:"TUN",name:"Túnez",          emoji:"🇹🇳",group:"F"},
+  {key:"BEL",name:"Bélgica",        emoji:"🇧🇪",group:"G"},
+  {key:"EGY",name:"Egipto",         emoji:"🇪🇬",group:"G"},
+  {key:"IRN",name:"Irán",           emoji:"🇮🇷",group:"G"},
+  {key:"NZL",name:"Nueva Zelanda",  emoji:"🇳🇿",group:"G"},
+  {key:"ESP",name:"España",         emoji:"🇪🇸",group:"H"},
+  {key:"CPV",name:"Cabo Verde",     emoji:"🇨🇻",group:"H"},
+  {key:"KSA",name:"Arabia Saudita", emoji:"🇸🇦",group:"H"},
+  {key:"URU",name:"Uruguay",        emoji:"🇺🇾",group:"H"},
+  {key:"FRA",name:"Francia",        emoji:"🇫🇷",group:"I"},
+  {key:"SEN",name:"Senegal",        emoji:"🇸🇳",group:"I"},
+  {key:"NOR",name:"Noruega",        emoji:"🇳🇴",group:"I"},
+  {key:"IRQ",name:"Irak",           emoji:"🇮🇶",group:"I"},
+  {key:"ARG",name:"Argentina",      emoji:"🇦🇷",group:"J"},
+  {key:"ALG",name:"Argelia",        emoji:"🇩🇿",group:"J"},
+  {key:"AUT",name:"Austria",        emoji:"🇦🇹",group:"J"},
+  {key:"JOR",name:"Jordania",       emoji:"🇯🇴",group:"J"},
+  {key:"POR",name:"Portugal",       emoji:"🇵🇹",group:"K"},
+  {key:"COL",name:"Colombia",       emoji:"🇨🇴",group:"K"},
+  {key:"UZB",name:"Uzbekistán",     emoji:"🇺🇿",group:"K"},
+  {key:"COD",name:"R.D. Congo",     emoji:"🇨🇩",group:"K"},
+  {key:"ENG",name:"Inglaterra",     emoji:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",group:"L"},
+  {key:"CRO",name:"Croacia",        emoji:"🇭🇷",group:"L"},
+  {key:"GHA",name:"Ghana",          emoji:"🇬🇭",group:"L"},
+  {key:"PAN",name:"Panamá",         emoji:"🇵🇦",group:"L"},
+  {key:"HST",name:"Historia del Mundial",emoji:"📖",stickers:[
+    {id:"HST1",label:"Uruguay 1930"},{id:"HST2",label:"Italia 1934"},
+    {id:"HST3",label:"Italia 1938"},{id:"HST4",label:"Uruguay 1950"},
+    {id:"HST5",label:"Alemania 1954"},{id:"HST6",label:"Brasil 1958"},
+    {id:"HST7",label:"Brasil 1962"},{id:"HST8",label:"Inglaterra 1966"},
+    {id:"HST9",label:"Brasil 1970"},{id:"HST10",label:"Alemania 1974"},
+    {id:"HST11",label:"Argentina 1978"}
+  ]}
+];
+
+function buildSection(t) {
+  if (t.stickers) return t;
+  var k = t.key;
+  var s = [{id:k+"1",label:"Logo Equipo"}];
+  for (var i=2;i<=19;i++) s.push({id:k+i,label:"Jugador "+(i-1)});
+  s.push({id:k+"20",label:"Foto Grupal"});
+  return Object.assign({},t,{stickers:s});
+}
+
+var SECTIONS = ALBUM_RAW.map(buildSection);
+var ALL_IDS = [];
+SECTIONS.forEach(function(s){ s.stickers.forEach(function(x){ ALL_IDS.push(x.id); }); });
+var TOTAL = ALL_IDS.length;
+
+// ── STORAGE ───────────────────────────────────────────────────────────────────
+var STORAGE_KEY = "mundial2026_figuritas";
+var owned = {};
+
+function loadData() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) owned = JSON.parse(raw);
+  } catch(e) { owned = {}; }
+}
+
+function saveData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(owned));
+  } catch(e) {}
+}
+
+function get(id) { return owned[id] || 0; }
+
+function add(id) {
+  owned[id] = (owned[id] || 0) + 1;
+  saveData();
+  refresh();
+}
+
+function remove(id) {
+  if ((owned[id] || 0) <= 1) delete owned[id];
+  else owned[id]--;
+  saveData();
+  refresh();
+}
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+function calcStats() {
+  var collected = 0, repCount = 0;
+  ALL_IDS.forEach(function(id){
+    var c = get(id);
+    if (c > 0) collected++;
+    if (c > 1) repCount++;
+  });
+  return {collected:collected, repCount:repCount};
+}
+
+function updateStats() {
+  var st = calcStats();
+  var pct = Math.round(st.collected / TOTAL * 100);
+  document.getElementById("s-tengo").textContent = st.collected;
+  document.getElementById("s-faltan").textContent = TOTAL - st.collected;
+  document.getElementById("s-rep").textContent = st.repCount;
+  document.getElementById("s-total").textContent = TOTAL;
+  document.getElementById("progress").style.width = pct + "%";
+  document.getElementById("pct-label").textContent = pct + "% completo";
+  document.getElementById("footer-stats").textContent =
+    st.collected + "/" + TOTAL + " obtenidas · " + st.repCount + " para cambiar · " + (TOTAL - st.collected) + " faltan";
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+var currentTab = 0;
+
+function showTab(i) {
+  currentTab = i;
+  document.querySelectorAll(".tab").forEach(function(t,idx){ t.classList.toggle("active", idx===i); });
+  document.querySelectorAll(".panel").forEach(function(p,idx){ p.classList.toggle("active", idx===i); });
+  if (i===0) renderAlbum();
+  if (i===1) renderRep();
+  if (i===2) renderMiss();
+  if (i===3) renderExport();
+}
+
+// ── ÁLBUM ─────────────────────────────────────────────────────────────────────
+var pressTimer = null;
+
+function stickerHTML(s) {
+  var cnt = get(s.id);
+  var has = cnt > 0;
+  var rep = cnt > 1;
+  var cls = rep ? "sticker-btn rep" : has ? "sticker-btn has" : "sticker-btn";
+  var icon = rep ? "⭐" : has ? "✓" : "";
+  var badge = cnt > 1 ? '<div class="badge">'+cnt+'</div>' : "";
+  return '<div class="sticker">' +
+    '<button class="'+cls+'" ' +
+      'ontouchstart="startPress(\''+s.id+'\')" ' +
+      'ontouchend="endPress(\''+s.id+'\')" ' +
+      'ontouchcancel="cancelPress()" ' +
+      'onclick="handleClick(\''+s.id+'\')" ' +
+      'oncontextmenu="handleRight(event,\''+s.id+'\')" ' +
+      'title="'+s.id+' - '+s.label+'">' +
+      '<span>'+s.id+'</span>' +
+      '<span class="icon">'+icon+'</span>' +
+    '</button>' +
+    badge +
+  '</div>';
+}
+
+function startPress(id) {
+  pressTimer = setTimeout(function(){ cancelPress(); remove(id); }, 600);
+}
+function endPress(id) { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } }
+function cancelPress() { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } }
+function handleClick(id) { if (!pressTimer) return; add(id); }
+function handleRight(e, id) { e.preventDefault(); remove(id); }
+
+function renderAlbum() {
+  var q = (document.getElementById("search-input").value || "").toUpperCase().trim();
+  var html = "";
+  SECTIONS.forEach(function(sec) {
+    var stickers = sec.stickers.filter(function(s){
+      if (!q) return true;
+      return s.id.toUpperCase().includes(q) || s.label.toUpperCase().includes(q) || sec.name.toUpperCase().includes(q);
+    });
+    if (!stickers.length) return;
+    var done = sec.stickers.filter(function(s){ return get(s.id)>0; }).length;
+    var badge = sec.group ? '<span class="group-badge">Grupo '+sec.group+'</span>' : "";
+    html += '<div class="section">';
+    html += '<div class="section-header">';
+    html += '<span class="section-title">'+sec.emoji+" "+sec.name+'</span>';
+    html += badge;
+    html += '<span class="section-count">'+done+"/"+sec.stickers.length+'</span>';
+    html += '</div>';
+    html += '<div class="stickers">';
+    stickers.forEach(function(s){ html += stickerHTML(s); });
+    html += '</div></div>';
+  });
+  document.getElementById("album-content").innerHTML = html;
+}
+
+// ── REPETIDAS ─────────────────────────────────────────────────────────────────
+function renderRep() {
+  var total_rep = 0, total_extra = 0;
+  var html = "";
+  SECTIONS.forEach(function(sec){
+    var rep = sec.stickers.filter(function(s){ return get(s.id)>1; });
+    if (!rep.length) return;
+    total_rep += rep.length;
+    rep.forEach(function(s){ total_extra += get(s.id)-1; });
+    html += '<div style="margin-bottom:12px">';
+    html += '<div style="font-size:11px;color:#FFD700;font-weight:800;margin-bottom:5px">'+sec.emoji+" "+sec.name+'</div>';
+    rep.forEach(function(s){
+      html += '<div class="rep-row">';
+      html += '<span class="rep-id">'+s.id+'</span>';
+      html += '<span class="rep-lbl">'+s.label+'</span>';
+      html += '<span class="rep-cnt">x'+(get(s.id)-1)+'</span>';
+      html += '<button class="adj-btn adj-plus" onclick="add(\''+s.id+'\')">+</button>';
+      html += '<button class="adj-btn adj-minus" onclick="remove(\''+s.id+'\')">−</button>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+  if (!total_rep) {
+    html = '<div class="empty"><div class="empty-icon">🔁</div>Sin repetidas todavía</div>';
+  } else {
+    html = '<div style="font-size:11px;color:#7aa8cc;margin-bottom:10px"><span style="color:#facc15;font-weight:900">'+total_rep+'</span> tipos · <span style="color:#facc15;font-weight:900">'+total_extra+'</span> copias extra</div>' + html;
+  }
+  document.getElementById("rep-content").innerHTML = html;
+}
+
+// ── FALTANTES ─────────────────────────────────────────────────────────────────
+function renderMiss() {
+  var total_miss = ALL_IDS.filter(function(id){ return get(id)===0; }).length;
+  if (!total_miss) {
+    document.getElementById("miss-content").innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><strong style="font-size:16px">¡Álbum completo!</strong></div>';
+    return;
+  }
+  var html = '<div style="font-size:11px;color:#7aa8cc;margin-bottom:10px">Faltan <span style="color:#f87171;font-weight:900">'+total_miss+'</span> figuritas</div>';
+  SECTIONS.forEach(function(sec){
+    var miss = sec.stickers.filter(function(s){ return get(s.id)===0; });
+    if (!miss.length) return;
+    html += '<div class="miss-section">';
+    html += '<div class="miss-header"><span class="miss-title">'+sec.emoji+" "+sec.name+'</span><span class="miss-count">faltan '+miss.length+'</span></div>';
+    html += '<div class="miss-chips">';
+    miss.forEach(function(s){
+      html += '<button class="miss-chip" onclick="add(\''+s.id+'\')">'+s.id+'</button>';
+    });
+    html += '</div></div>';
+  });
+  document.getElementById("miss-content").innerHTML = html;
+}
+
+// ── EXPORTAR ──────────────────────────────────────────────────────────────────
+function buildMissingText() {
+  var txt = "ME FALTAN - Panini Mundial 2026\n\n";
+  SECTIONS.forEach(function(sec){
+    var m = sec.stickers.filter(function(s){ return get(s.id)===0; });
+    if (!m.length) return;
+    txt += sec.emoji+" "+sec.name;
+    if (sec.group) txt += " (Grupo "+sec.group+")";
+    txt += "\n"+m.map(function(s){ return "  "+s.id; }).join(", ")+"\n\n";
+  });
+  return txt.trim();
+}
+
+function buildRepText() {
+  var txt = "PARA CAMBIAR - Panini Mundial 2026\n\n";
+  SECTIONS.forEach(function(sec){
+    var r = sec.stickers.filter(function(s){ return get(s.id)>1; });
+    if (!r.length) return;
+    txt += sec.emoji+" "+sec.name;
+    if (sec.group) txt += " (Grupo "+sec.group+")";
+    txt += "\n"+r.map(function(s){ return "  "+s.id+" x"+(get(s.id)-1); }).join(", ")+"\n\n";
+  });
+  return txt.trim();
+}
+
+function renderExport() {
+  var st = calcStats();
+  document.getElementById("exp-miss-title").textContent = "❌ Me faltan ("+(TOTAL-st.collected)+")";
+  document.getElementById("exp-rep-title").textContent = "🔁 Para cambiar ("+st.repCount+")";
+  document.getElementById("text-miss").value = buildMissingText();
+  document.getElementById("text-rep").value = buildRepText();
+}
+
+function copyText(which) {
+  var txt = which==="miss" ? buildMissingText() : buildRepText();
+  var btnId = which==="miss" ? "copy-miss" : "copy-rep";
+  var btn = document.getElementById(btnId);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(txt).catch(function(){});
+  } else {
+    var ta = document.getElementById("text-"+which);
+    ta.select();
+    document.execCommand("copy");
+  }
+  btn.textContent = "✓ Copiado";
+  btn.classList.add("ok");
+  setTimeout(function(){ 
+    btn.textContent = "📋 Copiar";
+    btn.classList.remove("ok");
+  }, 2200);
+}
+
+// ── REFRESH ───────────────────────────────────────────────────────────────────
+function refresh() {
+  updateStats();
+  if (currentTab===0) renderAlbum();
+  if (currentTab===1) renderRep();
+  if (currentTab===2) renderMiss();
+  if (currentTab===3) renderExport();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+loadData();
+updateStats();
+renderAlbum();
+</script>
+</body>
+</html>
