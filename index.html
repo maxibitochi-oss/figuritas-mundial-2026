@@ -355,6 +355,7 @@ function showTab(i) {
 
 // ── ÁLBUM ─────────────────────────────────────────────────────────────────────
 var pressTimer = null;
+var longPressFired = false;
 
 function stickerHTML(s) {
   var cnt = get(s.id);
@@ -379,11 +380,16 @@ function stickerHTML(s) {
 }
 
 function startPress(id) {
-  pressTimer = setTimeout(function(){ cancelPress(); remove(id); }, 600);
+  longPressFired = false;
+  pressTimer = setTimeout(function(){
+    longPressFired = true;
+    pressTimer = null;
+    remove(id);
+  }, 600);
 }
-function endPress(id) { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } }
-function cancelPress() { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } }
-function handleClick(id) { if (!pressTimer) return; add(id); }
+function endPress() { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } }
+function cancelPress() { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } longPressFired = false; }
+function handleClick(id) { if (longPressFired) { longPressFired = false; return; } add(id); }
 function handleRight(e, id) { e.preventDefault(); remove(id); }
 
 function renderAlbum() {
